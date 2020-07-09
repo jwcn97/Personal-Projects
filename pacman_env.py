@@ -18,6 +18,28 @@ STEPS = 200
 LEARNING_RATE = 0.1
 DISCOUNT = 0.95
 
+class QTable:
+    def __init__(self):
+        self.table = {}
+        for x1 in range(-SIZE+1, SIZE):
+            for y1 in range(-SIZE+1, SIZE):
+                for x2 in range(-SIZE+1, SIZE):
+                    for y2 in range(-SIZE+1, SIZE):
+                        # there are 4 discrete actions
+                        self.table[((x1, y1), (x2, y2))] = [np.random.uniform(-4,0) for i in range(4)]
+
+    def update(self, obs, action, new_obs, reward):
+        max_future_q = np.max(self.table[new_obs])
+        current_q = self.table[obs][action]
+
+        if reward in [FOOD_REWARD, -WALL_PENALTY]:
+            new_q = reward
+        else:
+            new_q = (1-LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
+
+        self.table[obs][action] = new_q
+
+
 class Maze:
     BLOCK_N = (255,255,255)
     FOOD_N = (0,255,0)
@@ -98,18 +120,6 @@ class Blob:
             return True
         return False
 
-    def updateQ(self, q_table, obs, action, new_obs, reward):
-        max_future_q = np.max(q_table[new_obs])
-        current_q = q_table[obs][action]
-
-        if reward in [FOOD_REWARD, -WALL_PENALTY]:
-            new_q = reward
-        else:
-            new_q = (1-LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
-
-        q_table[obs][action] = new_q
-        return q_table
-
 maze = Maze(arr=[
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
@@ -128,24 +138,11 @@ maze = Maze(arr=[
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ])
 
-# initialize qtable for player
-q_table = {}
-for x1 in range(-SIZE+1, SIZE):
-    for y1 in range(-SIZE+1, SIZE):
-        for x2 in range(-SIZE+1, SIZE):
-            for y2 in range(-SIZE+1, SIZE):
-                # there are 4 discrete actions
-                q_table[((x1, y1), (x2, y2))] = [np.random.uniform(-4,0) for i in range(4)]
+# initialize qtable for player and enemy
+q_table = QTable()
+q_table_e1 = QTable()
 
-# initialize qtable for enemy
-q_table_e1 = {}
-for x1 in range(-SIZE+1, SIZE):
-    for y1 in range(-SIZE+1, SIZE):
-        for x2 in range(-SIZE+1, SIZE):
-            for y2 in range(-SIZE+1, SIZE):
-                # there are 4 discrete actions
-                q_table_e1[((x1, y1), (x2, y2))] = [np.random.uniform(-4,0) for i in range(4)]
-
+# start episodes
 episode_rewards = []
 for episode in range(HM_EPISODES):
     player = Blob([1, 1])
@@ -158,40 +155,38 @@ for episode in range(HM_EPISODES):
         show = True
     else:
         show = False
-    
+
     episode_reward = 0
     for i in range(STEPS):
         # record observation
         obs = ((player.x, player.y), (enemy1.x, enemy1.y))
         # move player and enemy
-        action = np.argmax(q_table[obs])
+        action = np.argmax(q_table.table[obs])
         player.action(action)
-        action_e1 = np.argmax(q_table_e1[obs])
+        action_e1 = np.argmax(q_table_e1.table[obs])
         enemy1.action(action_e1)
         # update observation
         new_obs = ((player.x, player.y), (enemy1.x, enemy1.y))
 
         # compute and update new q value for player
-        if maze.hitWall(player) == 1:
-            reward = -WALL_PENALTY
-        elif (player == enemy1) or (player.jump(enemy1, action, action_e1)):
+        if (maze.hitWall(player)) or (player == enemy1) or (player.jump(enemy1, action, action_e1)):
             reward = -WALL_PENALTY
         elif player == food:
             reward = FOOD_REWARD
         else:
             reward = -MOVE_PENALTY
 
-        q_table = player.updateQ(q_table, obs, action, new_obs, reward)
+        q_table.update(obs, action, new_obs, reward)
 
         # compute and update new q value for enemy
-        if maze.hitWall(enemy1) == 1:
+        if maze.hitWall(enemy1):
             reward_e1 = -WALL_PENALTY
         elif (enemy1 == player) or (enemy1.jump(player, action_e1, action)):
             reward_e1 = FOOD_REWARD
         else:
             reward_e1 = -MOVE_PENALTY
 
-        q_table_e1 = player.updateQ(q_table_e1, obs, action_e1, new_obs, reward_e1)
+        q_table_e1.update(obs, action_e1, new_obs, reward_e1)
 
         # show image
         if show:
