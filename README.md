@@ -2,5 +2,4 @@
 
 A maze.py file was setup to test for the environment before player blob and enemy blob were tested in the pacman.py file <br/>
 
-<img src="/images/pacman.PNG" width="200" />
-![Pacman Maze](/images/pacman.PNG | width=100)
+<img src="/images/pacman.PNG" width="400" />
