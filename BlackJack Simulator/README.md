@@ -1,4 +1,4 @@
-# :spades: :hearts: :clubs: :diamonds: Blackjack-Simulation
+# :spades::hearts:Blackjack-Simulation:clubs::diamonds: 
 
 Objectives<br/>
 1) Determine whether Basic Strategy (set of actions based on dealer and player cards that has the highest probabilistic yield) still holds after players are being dealt more than 1 card<br/>
