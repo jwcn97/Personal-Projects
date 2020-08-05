@@ -1,0 +1,8 @@
+#puzzle_table {
+  width: 175px;
+  border: 1px solid black;
+}
+
+.boxes {
+  display: inline;
+}
