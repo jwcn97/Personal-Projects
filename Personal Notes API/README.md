@@ -1,4 +1,4 @@
-# Personal Notes API
+# Personal Notes RESTful API
 
 **1. How to run application**<br/>
 step 1: Clone repository from https://github.com/jwcn97/personal-notes<br/>
