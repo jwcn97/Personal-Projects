@@ -1,6 +1,6 @@
 # Personal Projects
 
-> BlackJack Simulator
+> :spades: :hearts: :clubs: :diamonds: BlackJack Simulator
 
 Objectives<br/>
 1) Determine whether Basic Strategy (set of actions based on dealer and player cards that has the highest probabilistic yield) still holds after players are being dealt more than 1 card<br/>
