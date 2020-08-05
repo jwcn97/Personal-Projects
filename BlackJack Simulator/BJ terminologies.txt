@@ -1,0 +1,22 @@
+ev - expected values
+hsd - the best ev between h/s/d
+hs - the better ev between h/s
+
+*one deck
+https://wizardofodds.com/games/blackjack/appendix/9/1dh17r4/
+
+*infinite deck
+https://wizardofodds.com/games/blackjack/expected-return-infinite-deck/
+
+*strategy calculator
+https://wizardofodds.com/games/blackjack/strategy/calculator/
+
+finished checking
+- summary
+- strategy
+- ev
+- hsd
+- double
+- hs
+- stand
+- hit
